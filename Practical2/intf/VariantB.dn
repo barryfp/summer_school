@@ -1,0 +1,5 @@
+component provides intf.Interface requires io.Output out {
+	void Interface:method2() {
+		out.println("VariantB")
+	}
+}

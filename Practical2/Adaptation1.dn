@@ -1,0 +1,22 @@
+uses main_component.MainComponent
+
+component provides App requires Loader loader, 
+ composition.Adapter adapter {
+	int App:main(AppParam param[]) {
+		IDC mainComponent = loader.load("main_component/MainComponent.o")
+		IDC variantA = loader.load("intf/VariantA.o")
+		IDC variantB = loader.load("intf/VariantB.o")
+
+		dana.rewire(mainComponent :> "intf.Interface",
+			variantA :< "intf.Interface")
+
+		MainComponent obj = new MainComponent() from mainComponent
+		obj.method()
+
+		adapter.adaptRequiredInterface(mainComponent, 
+			"intf.Interface", variantB)
+		obj.method()
+
+		return 0
+	}
+}

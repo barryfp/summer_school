@@ -1,0 +1,6 @@
+component provides main_component.MainComponent requires 
+ intf.Interface intf {
+	void MainComponent:method() {
+		intf.method2()
+	}
+}

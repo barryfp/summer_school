@@ -1,0 +1,68 @@
+uses main_component.MainComponent
+
+data Parameter {
+	char type[]
+}
+
+data Function {
+	char name[]
+	char returnType[]
+	Parameter parameters[]
+}
+
+data Intf {
+	char package[]
+	char alias[]
+	Function functions[]
+}
+
+data Section {
+	Intf providedInterfaces[]
+	Intf requiredInterfaces[]
+}
+
+data Variants {
+	char providedIntf[]
+	IDC comp
+}
+
+component provides App requires Loader loader, composition.Adapter adapter,
+ io.Output out, composition.ObjectWriter, data.json.JSONEncoder jsonEncoder,
+ composition.Search search {
+	int App:main(AppParam param[]) {
+		char rootCompPath[] = "main_component/MainComponent.o"
+
+		// extracting info from mainComponent
+		ObjectWriter objWriter = new ObjectWriter(rootCompPath)
+		InfoSection infoSection = objWriter.getInfoSection("DNIL", "json")
+		Section sec = jsonEncoder.jsonToData(infoSection.content, typeof(Section), null)
+
+		// looking for components that provide requiredInterface
+		String compsPath[] = search.getComponents(sec.requiredInterfaces[0].package)
+		
+		//load mainComponent.o
+		IDC mainComponent = loader.load(rootCompPath)
+
+		// loading components that provide requiredInterface
+		Variants variants[] = new Variants[compsPath.arrayLength]
+		for (int count = 0; count < compsPath.arrayLength; count++) {
+			variants[count] = new Variants()
+			variants[count].providedIntf = sec.requiredInterfaces[0].package
+			variants[count].comp = loader.load(compsPath[count].string)
+		}
+		
+		// continuing with WIRE(ing)
+		dana.rewire(mainComponent :> sec.requiredInterfaces[0].package,
+			variants[0].comp :< sec.requiredInterfaces[0].package)
+
+		MainComponent obj = new MainComponent() from mainComponent
+		obj.method()
+
+		// and ADAPT(ing)
+		adapter.adaptRequiredInterface(mainComponent, 
+			sec.requiredInterfaces[0].package, variants[1].comp)
+		obj.method()
+
+		return 0
+	}
+}

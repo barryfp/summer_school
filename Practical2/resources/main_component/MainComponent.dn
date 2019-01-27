@@ -1,0 +1,3 @@
+interface MainComponent {
+	void method()
+}
