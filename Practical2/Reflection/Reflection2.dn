@@ -1,0 +1,23 @@
+data Person {
+	char name[]
+	int age
+}
+
+component provides App requires io.Output out {
+	void greaterThan(Data a, Data b, TypeField field) {
+		if (a:.field > b:.field) {
+			out.println("Yes!")
+		} else {
+			out.println("No!")
+		}
+	}
+
+	int App:main(AppParam params[]) {
+		Person p1 = new Person("Sam", 19)
+		Person p2 = new Person("John", 20)
+
+		greaterThan(p1, p2, Person.[age])
+		greaterThan(p2, p1, Person.[age])
+		return 0
+	}
+}

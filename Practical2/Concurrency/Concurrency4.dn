@@ -1,0 +1,17 @@
+component provides App requires io.Output out {
+	Thread mainThread
+
+	void printMany(char string[], int times) {
+		for (int count = 0; count < times; count++) {
+			out.println("$(string)")
+		}
+		mainThread.signal()
+	}
+
+	int App:main(AppParam param[]) {
+		mainThread = this.thread
+		asynch::printMany("thread", 100)
+		this.thread.wait()
+		return 0
+	}
+}

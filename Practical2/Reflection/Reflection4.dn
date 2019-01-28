@@ -1,0 +1,22 @@
+uses reflect.Type
+
+data Person {
+	char name[]
+	int age
+}
+
+component provides App requires io.Output out, data.IntUtil iu {
+	Data createData(Type t) {
+		Data d = new Data() from t
+		return d
+	}
+
+	int App:main(AppParam params[]) {
+		Person p = createData(typeof(Person))
+		p.name = "Sam"
+		p.age = 19
+
+		out.println("$(p.name), $(iu.intToString(p.age))")
+		return 0
+	}
+}

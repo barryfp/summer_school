@@ -1,0 +1,16 @@
+data Person {
+	char name[]
+	int age
+}
+
+component provides App requires io.Output out {
+	int App:main(AppParam params[]) {
+		Person p 		= new Person("Sam", 19)
+		TypeField tf 	= Person.[name]
+
+		out.println("$(p:.tf) = $(p.name)")
+		p:.tf = "John"
+		out.println("$(p:.tf) = $(p.name)")
+		return 0
+	}
+}

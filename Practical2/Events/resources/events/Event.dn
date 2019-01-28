@@ -1,0 +1,4 @@
+interface Event {
+	event eventExample()
+	void trigger()
+}
