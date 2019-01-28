@@ -1,0 +1,199 @@
+uses Service
+
+data Component {
+	char path[]
+	char sourcePath[]
+	IDC com
+	DateTime lastModified
+	
+	String dependencies[]
+	}
+
+data Interface {
+	char package[]
+	Component impl
+	
+	Component users[]
+	}
+
+data ReqIntf {
+	char package[]
+	char alias[]
+	bool isNative
+	}
+
+component provides App requires io.Output out, Loader loader, NativeLoader nLoader, composition.Search search, data.json.JSONParser parser, composition.ObjectWriter, System system, time.Calendar calendar, io.FileSystem fileSystem, os.Run exec, time.Timer timer, time.DateUtil dateUtil, composition.Adapter adapter {
+	
+	Interface interfaces[]
+	Component components[]
+	
+	void refreshThread()
+		{
+		//check the lastModified date of all loaded things, recompile and adapt them into the system if newer
+		while (true)
+			{
+			for (int i = 1; i < interfaces.arrayLength; i++)
+				{
+				//out.println(" -- chk $(interfaces[i].impl.path) --")
+				
+				//check for a new version of the source file (comment this out if you want manual compilation)
+				if (dateUtil.after(fileSystem.getInfo(interfaces[i].impl.sourcePath).modified, interfaces[i].impl.lastModified))
+					{
+					//compile
+					exec.execute("dnc $(interfaces[i].impl.sourcePath)")
+					}
+				
+				//check for a new version of the compiled file (meaning compilation succeeded)
+				if (dateUtil.after(fileSystem.getInfo(interfaces[i].impl.path).modified, interfaces[i].impl.lastModified))
+					{
+					out.println(" -- adapting --")
+					
+					Component cq = loadComponent(interfaces[i].impl.path)
+					
+					for (int j = 0; j < interfaces[i].users.arrayLength; j++)
+						{
+						adapter.adaptRequiredInterface(interfaces[i].users[j].com, interfaces[i].package, cq.com)
+						}
+					
+					interfaces[i].impl.com = cq.com
+					interfaces[i].impl.lastModified = cq.lastModified
+					interfaces[i].impl.dependencies = cq.dependencies
+					}
+				}
+			
+			timer.sleep(100)
+			}
+		}
+	
+	ReqIntf[] getRequiredInterfaces(char com[])
+		{
+		ReqIntf result[]
+		
+		ObjectWriter reader = new ObjectWriter(com)
+		InfoSection section = reader.getInfoSection("DNIL", "json")
+		
+		JSONElement document = parser.parseDocument(section.content)
+		
+		JSONElement requiredInterfaces = parser.getValue(document, "requiredInterfaces")
+		
+		if (requiredInterfaces != null)
+			{
+			for (int i = 0; i < requiredInterfaces.children.arrayLength; i++)
+				{
+				JSONElement ri = requiredInterfaces.children[i]
+				char package[] = parser.getValue(ri, "package").value
+				char alias[] = parser.getValue(ri, "alias").value
+				bool isNative = parser.getValue(ri, "native") != null && parser.getValue(ri, "native").value == "true"
+				
+				result = new ReqIntf[](result, new ReqIntf(package, alias, isNative))
+				}
+			}
+		
+		return result
+		}
+	
+	bool isAutoBinding(char package[])
+		{
+		String intfs[] = system.getAutoBindings()
+		
+		for (int i = 0; i < intfs.arrayLength; i++)
+			{
+			if (intfs[i].string == package) return true
+			}
+		
+		return false
+		}
+	
+	void resolveDependency(Component forCom, char package[], char alias[])
+		{
+		//search for already-loaded interface/implementation of this package and use it if present, else load it up...
+		for (int i = 0; i < interfaces.arrayLength; i++)
+			{
+			if (interfaces[i].package == package)
+				{
+				dana.rewire(forCom.com :> package, interfaces[i].impl.com :< package)
+				interfaces[i].users = new Component[](interfaces[i].users, forCom)
+				return
+				}
+			}
+		
+		//we didn't find it, so load it now
+		
+		char np[] = search.getDefaultComponent(package)
+		
+		Component nc = loadComponent(np)
+		
+		dana.rewire(forCom.com :> package, nc.com :< package)
+		
+		Interface nin = new Interface(package, nc)
+		nin.users = new Component[](nin.users, forCom)
+		
+		components = new Component[](components, nc)
+		interfaces = new Interface[](interfaces, nin)
+		}
+	
+	char[] getSourcePath(char objectPath[])
+		{
+		char srcPath[] = new char[objectPath.arrayLength+1]
+		srcPath =[] objectPath
+		srcPath[srcPath.arrayLength-2] = "d"
+		srcPath[srcPath.arrayLength-1] = "n"
+		
+		return srcPath
+		}
+	
+	Component loadComponent(char path[])
+		{
+		out.println("load $path")
+		
+		ReqIntf ri[] = getRequiredInterfaces(path)
+		
+		Component newCom = new Component(path, getSourcePath(path), loader.load(path), fileSystem.getInfo(path).modified, ri)
+		
+		out.println(" -- scan RI $path")
+		
+		for (int i = 0; i < ri.arrayLength; i++)
+			{
+			if (!ri[i].isNative && !isAutoBinding(ri[i].package))
+				{
+				resolveDependency(newCom, ri[i].package, ri[i].alias)
+				}
+				else if (ri[i].isNative && !dana.isConnected(newCom.com :> ri[i].alias))
+				{
+				IDC ncom = nLoader.load(ri[i].alias)
+				dana.rewire(newCom.com :> ri[i].alias, ncom :< ri[i].alias)
+				}
+			}
+		
+		//service start
+		if (newCom.com :< Service != null)
+			{
+			Service svc = new Service() from newCom.com :< Service
+			svc.start()
+			}
+		
+		return newCom
+		}
+	
+	int App:main(AppParam params[])
+		{
+		char mainPath[] = params[0].string
+		
+		//locate and load all of the components we need, starting from the "main" component given on the command line
+		interfaces = new Interface[](interfaces, new Interface("App"))
+		
+		Component mainCom = loadComponent(mainPath)
+		interfaces[0].impl = mainCom
+		
+		App app = new App() from mainCom.com :< App
+		
+		//start the thread which rechecks the directory for updates to the source code / compiled code
+		asynch::refreshThread()
+		
+		//launch the system we're controlling
+		app.main(null)
+		
+		return 0
+		}
+	
+	}
