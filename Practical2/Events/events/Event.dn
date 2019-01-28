@@ -1,0 +1,8 @@
+component provides events.Event requires time.Timer timer {
+	void Event:trigger() {
+		while (true) {
+			timer.sleep(1000)
+			emitevent eventExample()
+		}
+	}
+}

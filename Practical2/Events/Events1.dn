@@ -1,0 +1,20 @@
+uses events.EventData
+
+component provides App requires io.Output out, events.Event {
+	eventsink Events(EventData ed) {
+		if (ed.type == Event.[eventExample]) {
+			out.println("Caught event here!")
+		}
+	}
+
+	int App:main(AppParam params[]) {
+		Event myEvent = new Event()
+		sinkevent Events(myEvent)
+
+		myEvent.trigger()
+
+		this.thread.wait()
+
+		return 0
+	}
+}

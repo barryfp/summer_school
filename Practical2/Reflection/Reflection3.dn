@@ -1,0 +1,18 @@
+uses reflect.Type
+
+data Person {
+	char name[]
+	int age
+}
+
+component provides App requires io.Output out {
+
+	int App:main(AppParam params[]) {
+		Person p = new Person("Sam", 19)
+		Type type = typeof(p)
+		for (int count = 0; count < type.fields.arrayLength; count++) {
+			out.println("$(type.fields[count].name)")
+		}
+		return 0
+	}
+}
