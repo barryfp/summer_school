@@ -1,0 +1,196 @@
+uses events.EventData
+
+component provides App requires ui.Window, ui.Button, ui.Label, Font, data.IntUtil iu, data.StringUtil strUtil {
+	Window window
+	
+	Button num0
+	Button num1
+	Button num2
+	Button num3
+	Button num4
+	Button num5
+	Button num6
+	Button num7
+	Button num8
+	Button num9
+
+	Button add
+	Button equals
+
+	Label display
+
+	Thread main
+
+	char currentDisplay[] 	= "0"
+	bool addPressed			= false
+	int n1 					= 0
+	int n2 					= 0
+
+	eventsink AppEvents(EventData ed) {
+		if (ed.type == Button.[click] && ed.source === num1) {
+			if (currentDisplay == "0") {
+				currentDisplay = "1"
+			} else {
+				currentDisplay = new char[](currentDisplay, "1")
+			}
+			display.setText(currentDisplay)
+		} else if (ed.type == Button.[click] && ed.source === num2) {
+			if (currentDisplay == "0") {
+				currentDisplay = "2"
+			} else {
+				currentDisplay = new char[](currentDisplay, "2")
+			}
+			display.setText(currentDisplay)
+		} else if (ed.type == Button.[click] && ed.source === num3) {
+			if (currentDisplay == "0") {
+				currentDisplay = "3"
+			} else {
+				currentDisplay = new char[](currentDisplay, "3")
+			}
+			display.setText(currentDisplay)
+		} else if (ed.type == Button.[click] && ed.source === num4) {
+			if (currentDisplay == "0") {
+				currentDisplay = "4"
+			} else {
+				currentDisplay = new char[](currentDisplay, "4")
+			}
+			display.setText(currentDisplay)
+		} else if (ed.type == Button.[click] && ed.source === num5) {
+			if (currentDisplay == "0") {
+				currentDisplay = "5"
+			} else {
+				currentDisplay = new char[](currentDisplay, "5")
+			}
+			display.setText(currentDisplay)
+		} else if (ed.type == Button.[click] && ed.source === num6) {
+			if (currentDisplay == "0") {
+				currentDisplay = "6"
+			} else {
+				currentDisplay = new char[](currentDisplay, "6")
+			}
+			display.setText(currentDisplay)
+		} else if (ed.type == Button.[click] && ed.source === num7) {
+			if (currentDisplay == "0") {
+				currentDisplay = "7"
+			} else {
+				currentDisplay = new char[](currentDisplay, "7")
+			}
+			display.setText(currentDisplay)
+		} else if (ed.type == Button.[click] && ed.source === num8) {
+			if (currentDisplay == "0") {
+				currentDisplay = "8"
+			} else {
+				currentDisplay = new char[](currentDisplay, "8")
+			}
+			display.setText(currentDisplay)
+		} else if (ed.type == Button.[click] && ed.source === num9) {
+			if (currentDisplay == "0") {
+				currentDisplay = "9"
+			} else {
+				currentDisplay = new char[](currentDisplay, "9")
+			}
+			display.setText(currentDisplay)
+		} else if (ed.type == Button.[click] && ed.source === num0) {
+			if (currentDisplay == "0") {
+				currentDisplay = "0"
+			} else {
+				currentDisplay = new char[](currentDisplay, "0")
+			}
+			display.setText(currentDisplay)
+		} else if (ed.type == Button.[click] && ed.source === add) {
+			if (!addPressed) {
+				n1 = iu.intFromString(currentDisplay)
+				currentDisplay = new char[](currentDisplay, "+")
+				addPressed = true
+				display.setText(currentDisplay)	
+			}
+		} else if (ed.type == Button.[click] && ed.source === equals) {
+			if (addPressed) {
+				n2 = iu.intFromString(strUtil.explode(currentDisplay, "+")[1].string)
+				currentDisplay = new char[](iu.intToString(n1 + n2))
+				addPressed = false
+				display.setText(currentDisplay)
+			}
+		} else if (ed.source === window && ed.type == Window.[close]) {
+			main.signal()
+		}
+	}
+
+	int App:main(AppParam params[]) {
+		window = new Window("Calculator")
+		window.setSize(220, 150)
+		window.setVisible(true)
+
+		//000000000000000000
+		display = new Label(currentDisplay, "LiberationMono.ttf", 18)
+		display.setColor(new Color(0, 0, 0, 255))
+
+		add 	= new Button("+")
+		equals  = new Button("=")
+ 
+		num0 = new Button("0")
+		num1 = new Button("1")
+		num2 = new Button("2")
+		num3 = new Button("3")
+		num4 = new Button("4")
+		num5 = new Button("5")
+		num6 = new Button("6")
+		num7 = new Button("7")
+		num8 = new Button("8")
+		num9 = new Button("9")
+
+		display.setPosition(5, 5)
+
+		add.setPosition(160, 30)
+		equals.setPosition(160, 120)
+
+		num1.setPosition(10, 30)
+		num2.setPosition(55, 30)
+		num3.setPosition(100, 30)
+		num4.setPosition(10, 60)
+		num5.setPosition(55, 60)
+		num6.setPosition(100, 60)
+		num7.setPosition(10, 90)
+		num8.setPosition(55, 90)
+		num9.setPosition(100, 90)
+		num0.setPosition(55, 120)
+		
+		window.addObject(display)
+
+		window.addObject(add)
+		window.addObject(equals)
+
+		window.addObject(num0)
+		window.addObject(num1)
+		window.addObject(num2)
+		window.addObject(num3)
+		window.addObject(num4)
+		window.addObject(num5)
+		window.addObject(num6)
+		window.addObject(num7)
+		window.addObject(num8)
+		window.addObject(num9)
+
+		sinkevent AppEvents(num0)
+		sinkevent AppEvents(num1)
+		sinkevent AppEvents(num2)
+		sinkevent AppEvents(num3)
+		sinkevent AppEvents(num4)
+		sinkevent AppEvents(num5)
+		sinkevent AppEvents(num6)
+		sinkevent AppEvents(num7)
+		sinkevent AppEvents(num8)
+		sinkevent AppEvents(num9)
+		sinkevent AppEvents(add)
+		sinkevent AppEvents(equals)
+
+		sinkevent AppEvents(window)
+
+		main = this.thread
+		this.thread.wait()
+
+		window.close()
+
+		return 0
+	}
+}
