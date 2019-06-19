@@ -232,50 +232,48 @@ component provides monitoring.Perception requires io.Output out, data.IntUtil iu
 						else { metricsJSON = new char[](metricsJSON, ", {")	}				
 						if (metrics[i].high) { preferHigh = "true" } 
 						else { preferHigh = "false" }
-						metricsJSON = new char[](metricsJSON,
-									"\"name\": \"$(metrics[i].name)\"",
-									", \"config\": \"", currentConfig, "\"",
-									", \"source\": \"", componentName, "\"",
-									", \"value\":", iu.intToString(metrics[i].value),
-									", \"count\":", iu.intToString(metrics[i].counter),
-									", \"preferHigh\":", preferHigh,
-									", \"startTime\": \"",
-									iu.intToString(metrics[i].started.year), "-", 
-									iu.intToString(metrics[i].started.month), "-", 
-									iu.intToString(metrics[i].started.day), " ",
-									iu.intToString(metrics[i].started.hour), ":",
-									iu.intToString(metrics[i].started.minute), ":",
-									iu.intToString(metrics[i].started.second), "\"",
-									", \"endTime\": \"",
-									iu.intToString(metrics[i].finished.year), "-", 
-									iu.intToString(metrics[i].finished.month), "-", 
-									iu.intToString(metrics[i].finished.day), " ",
-									iu.intToString(metrics[i].finished.hour), ":",
-									iu.intToString(metrics[i].finished.minute), ":",
-									iu.intToString(metrics[i].finished.second), "\"}")
+						metricsJSON = new char[](metricsJSON, "\"name\": \"$(metrics[i].name)\"")
+						metricsJSON = new char[](metricsJSON, ", \"config\": \"", currentConfig, "\"")
+						metricsJSON = new char[](metricsJSON, ", \"source\": \"", componentName, "\"")
+						metricsJSON = new char[](metricsJSON, ", \"value\":", iu.intToString(metrics[i].value))
+						metricsJSON = new char[](metricsJSON, ", \"count\":", iu.intToString(metrics[i].counter))
+						metricsJSON = new char[](metricsJSON, ", \"preferHigh\":", preferHigh)
+						metricsJSON = new char[](metricsJSON, ", \"startTime\": \"")
+						metricsJSON = new char[](metricsJSON, iu.intToString(metrics[i].started.year), "-") 
+						metricsJSON = new char[](metricsJSON, iu.intToString(metrics[i].started.month), "-") 
+						metricsJSON = new char[](metricsJSON, iu.intToString(metrics[i].started.day), " ")
+						metricsJSON = new char[](metricsJSON, iu.intToString(metrics[i].started.hour), ":")
+						metricsJSON = new char[](metricsJSON, iu.intToString(metrics[i].started.minute), ":")
+						metricsJSON = new char[](metricsJSON, iu.intToString(metrics[i].started.second), "\"")
+						metricsJSON = new char[](metricsJSON, ", \"endTime\": \"")
+						metricsJSON = new char[](metricsJSON, iu.intToString(metrics[i].finished.year), "-") 
+						metricsJSON = new char[](metricsJSON, iu.intToString(metrics[i].finished.month), "-") 
+						metricsJSON = new char[](metricsJSON, iu.intToString(metrics[i].finished.day), " ")
+						metricsJSON = new char[](metricsJSON, iu.intToString(metrics[i].finished.hour), ":")
+						metricsJSON = new char[](metricsJSON, iu.intToString(metrics[i].finished.minute), ":")
+						metricsJSON = new char[](metricsJSON, iu.intToString(metrics[i].finished.second), "\"}")
 					}
 					for (int i = 0; i < events.arrayLength; i++) {
 						if (eventsJSON.arrayLength == 0) { eventsJSON = "\"events\": [{" }
 						else { eventsJSON = new char[](eventsJSON, ", {") }
-						eventsJSON = new char[](eventsJSON,
-							"\"name\": \"$(events[i].type)\"",
-							", \"source\": \"", componentName, "\"",
-							", \"value\":", iu.intToString(events[i].quantifier),
-							", \"count\":", iu.intToString(events[i].counter),
-							", \"startTime\": \"",
-							iu.intToString(events[i].started.year), "-", 
-							iu.intToString(events[i].started.month), "-", 
-							iu.intToString(events[i].started.day), " ",
-							iu.intToString(events[i].started.hour), ":",
-							iu.intToString(events[i].started.minute), ":",
-							iu.intToString(events[i].started.second), "\"",
-							", \"endTime\": \"",
-							iu.intToString(events[i].finished.year), "-", 
-							iu.intToString(events[i].finished.month), "-", 
-							iu.intToString(events[i].finished.day), " ",
-							iu.intToString(events[i].finished.hour), ":",
-							iu.intToString(events[i].finished.minute), ":",
-							iu.intToString(events[i].finished.second), "\"}")
+						eventsJSON = new char[](eventsJSON,	"\"name\": \"$(events[i].type)\"")
+						eventsJSON = new char[](eventsJSON,	", \"source\": \"", componentName, "\"")
+						eventsJSON = new char[](eventsJSON,	", \"value\":", iu.intToString(events[i].quantifier))
+						eventsJSON = new char[](eventsJSON,	", \"count\":", iu.intToString(events[i].counter))
+						eventsJSON = new char[](eventsJSON,	", \"startTime\": \"")
+						eventsJSON = new char[](eventsJSON,	iu.intToString(events[i].started.year), "-") 
+						eventsJSON = new char[](eventsJSON,	iu.intToString(events[i].started.month), "-") 
+						eventsJSON = new char[](eventsJSON,	iu.intToString(events[i].started.day), " ")
+						eventsJSON = new char[](eventsJSON,	iu.intToString(events[i].started.hour), ":")
+						eventsJSON = new char[](eventsJSON,	iu.intToString(events[i].started.minute), ":")
+						eventsJSON = new char[](eventsJSON,	iu.intToString(events[i].started.second), "\"")
+						eventsJSON = new char[](eventsJSON,	", \"endTime\": \"")
+						eventsJSON = new char[](eventsJSON,	iu.intToString(events[i].finished.year), "-") 
+						eventsJSON = new char[](eventsJSON,	iu.intToString(events[i].finished.month), "-") 
+						eventsJSON = new char[](eventsJSON,	iu.intToString(events[i].finished.day), " ")
+						eventsJSON = new char[](eventsJSON,	iu.intToString(events[i].finished.hour), ":")
+						eventsJSON = new char[](eventsJSON,	iu.intToString(events[i].finished.minute), ":")
+						eventsJSON = new char[](eventsJSON,	iu.intToString(events[i].finished.second), "\"}")
 					}
 
 				}
@@ -288,28 +286,26 @@ component provides monitoring.Perception requires io.Output out, data.IntUtil iu
 			}
 			if ((metricsJSON.arrayLength == 0) && (eventsJSON.arrayLength > 0)) {
 				metricsJSON = "\"metrics\": [{"
-				metricsJSON = new char[](metricsJSON,
-									"\"name\": \"no_metric\"",
-									", \"config\": \"", getConfig(), "\"",
-									", \"source\": \"", "\"",
-									", \"value\":", iu.intToString(INT_MAX),
-									", \"count\":", iu.intToString(1),
-									", \"preferHigh\":", "false",
-									", \"startTime\": \"","\"",
-									", \"endTime\": \"", "\"}]")
+				metricsJSON = new char[](metricsJSON, "\"name\": \"no_metric\"")
+				metricsJSON = new char[](metricsJSON, ", \"config\": \"", getConfig(), "\"")
+				metricsJSON = new char[](metricsJSON, ", \"source\": \"", "\"")
+				metricsJSON = new char[](metricsJSON, ", \"value\":", iu.intToString(INT_MAX))
+				metricsJSON = new char[](metricsJSON, ", \"count\":", iu.intToString(1))
+				metricsJSON = new char[](metricsJSON, ", \"preferHigh\":", "false")
+				metricsJSON = new char[](metricsJSON, ", \"startTime\": \"","\"")
+				metricsJSON = new char[](metricsJSON, ", \"endTime\": \"", "\"}]")
 				resultingJSON = new char[]("{", metricsJSON, eventsJSON, "]}")
 			}
 			if ((metricsJSON.arrayLength == 0) && (eventsJSON.arrayLength == 0)) {
 				resultingJSON = "{\"metrics\": [{"
-				resultingJSON = new char[](resultingJSON,
-									"\"name\": \"no_metric\"",
-									", \"config\": \"", getConfig(), "\"",
-									", \"source\": \"", "\"",
-									", \"value\":", iu.intToString(INT_MAX),
-									", \"count\":", iu.intToString(1),
-									", \"preferHigh\":", "false",
-									", \"startTime\": \"","\"",
-									", \"endTime\": \"", "\"}]", "}")
+				resultingJSON = new char[](resultingJSON, "\"name\": \"no_metric\"")
+				resultingJSON = new char[](resultingJSON, ", \"config\": \"", getConfig(), "\"")
+				resultingJSON = new char[](resultingJSON, ", \"source\": \"", "\"")
+				resultingJSON = new char[](resultingJSON, ", \"value\":", iu.intToString(INT_MAX))
+				resultingJSON = new char[](resultingJSON, ", \"count\":", iu.intToString(1))
+				resultingJSON = new char[](resultingJSON, ", \"preferHigh\":", "false")
+				resultingJSON = new char[](resultingJSON, ", \"startTime\": \"","\"")
+				resultingJSON = new char[](resultingJSON, ", \"endTime\": \"", "\"}]", "}")
 			}
 			/* turn proxy back on */
 			for (int compPointer = 0; compPointer < components.arrayLength; compPointer++) {
